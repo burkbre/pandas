@@ -284,6 +284,8 @@ def to_hdf(
             data_columns=data_columns,
             errors=errors,
             encoding=encoding,
+            complib=complib,
+            complevel=complevel
         )
     else:
         # NB: dropna is not passed to `put`
@@ -297,6 +299,8 @@ def to_hdf(
             data_columns=data_columns,
             errors=errors,
             encoding=encoding,
+            complib=complib,
+            complevel=complevel
         )
 
     path_or_buf = _stringify_path(path_or_buf)
@@ -1015,7 +1019,7 @@ class HDFStore:
         format=None,
         index=True,
         append=False,
-        complib=None,
+        complib: Optional[str] = None,
         complevel: Optional[int] = None,
         min_itemsize: Optional[Union[int, Dict[str, int]]] = None,
         nan_rep=None,
@@ -1132,7 +1136,7 @@ class HDFStore:
         axes=None,
         index=True,
         append=True,
-        complib=None,
+        complib: Optional[str] = None,
         complevel: Optional[int] = None,
         columns=None,
         min_itemsize: Optional[Union[int, Dict[str, int]]] = None,
@@ -1665,7 +1669,7 @@ class HDFStore:
         axes=None,
         index=True,
         append=False,
-        complib=None,
+        complib: Optional[str] = None,
         complevel: Optional[int] = None,
         fletcher32=None,
         min_itemsize: Optional[Union[int, Dict[str, int]]] = None,
@@ -4407,7 +4411,7 @@ class AppendableSeriesTable(AppendableFrameTable):
     def get_object(self, obj, transposed: bool):
         return obj
 
-    def write(self, obj, data_columns=None, **kwargs):
+    def write(self, obj, data_columns=None, dropna=None, **kwargs):
         """ we are going to write this as a frame table """
         if not isinstance(obj, DataFrame):
             name = obj.name or "values"

@@ -263,6 +263,29 @@ class TestHDFStore:
 
             pd.set_option("io.hdf.default_format", None)
 
+    def test_api_complib(self, setup_path):
+
+        # GH2930
+
+        df = DataFrame({"A1": np.random.randn(20)}, index=np.arange(20))
+        df.loc[0:15] = np.nan
+
+        with ensure_clean_store(setup_path) as path:
+
+            df.to_hdf(path, "df", dropna=False, format="table")
+
+            with HDFStore(path) as store:
+                result = read_hdf(store, "df")
+                tm.assert_frame_equal(result, df)
+
+        with ensure_clean_store(setup_path) as path:
+
+            df.to_hdf(path, "df2", dropna=True, format="table" complib='blosc')
+
+            with HDFStore(path) as store:
+                result = read_hdf(store, "df2")
+                tm.assert_frame_equal(result, df[-4:])
+
     def test_keys(self, setup_path):
 
         with ensure_clean_store(setup_path) as store:
